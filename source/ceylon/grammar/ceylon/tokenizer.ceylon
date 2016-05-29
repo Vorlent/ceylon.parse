@@ -197,7 +197,7 @@ shared abstract class BaseTokenizerToken<K>(shared actual Atom type, shared
 
             if (is String s, text.includesAt(position, s)) {
                 results.add(make(resultsCache, t, text, position + s.size, s.size, endPosition, 0));
-            } else if (is Boolean(Object) s, exists c = text[position], s(c)) {
+            } else if (is Boolean(Character) s, exists c = text[position], s(c)) {
                 results.add(make(resultsCache, t, text, position + 1, 1, endPosition, 0));
             } else if (is Regular s, exists m = s.matchAt(position, text)) {
                 results.add(make(resultsCache, t, text, position + m.length, m.length, endPosition, 0));
