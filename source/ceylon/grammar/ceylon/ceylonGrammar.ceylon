@@ -53,15 +53,19 @@ List<CeylonToken> tokenStream(CeylonToken|{CeylonToken|Node*}|Node?* args) {
     value ret = ArrayList<CeylonToken>();
 
     for (arg in args) {
-        if (! exists arg) {
+        if (arg is Null) {
             continue;
-        } else if (is CeylonMetaToken arg) {
+        } else if (arg is CeylonMetaToken) {
+            assert(is CeylonMetaToken arg);
             ret.addAll(tokenStream(*arg.subtokens));
-        } else if (is CeylonToken arg) {
+        } else if (arg is CeylonToken) {
+            assert(is CeylonToken arg);
             ret.add(arg);
-        } else if (is {CeylonToken|Node*} arg) {
+        } else if (arg is {CeylonToken|Node*}) {
+            assert(is {CeylonToken|Node*} arg);
             ret.addAll(tokenStream(*arg));
         } else {
+            assert(is Node arg);
             assert(exists k = arg.get(tokensKey));
             ret.addAll(k);
         }
