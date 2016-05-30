@@ -4,7 +4,8 @@ import ceylon.collection { ArrayList, MutableMap, HashMap }
 import ceylon.parse.regular { ... }
 import ceylon.language.meta.model {
 
-	Type
+	Type,
+	Class
 }
 
 "List of whitespace characters"
@@ -25,10 +26,10 @@ String[] reservedWords = ["assembly", "module", "package", "import", "alias",
 TokenizerToken<out CeylonToken>(MutableMap<[Atom,String,Integer], {Token<Object> *}>,
         Atom, String, Integer, Integer, [Integer,Integer], Integer) tokenizerToken<Tok>()
         given Tok satisfies CeylonToken {
-	value type = `Tok`;
+	assert(is <Callable<Tok, [Integer,Integer,Integer,Integer]>|Callable<Tok, [String,Integer,Integer,Integer,Integer]>> tokenCallable = `Tok`);
 	return (MutableMap<[Atom,String,Integer], {Token<Object> *}> resultsCache,
         Atom a, String t, Integer p, Integer d, [Integer,Integer] s, Integer l)
-		=> TokenizerToken<Tok>(resultsCache, a, t, p, d, s, l, type);
+		=> TokenizerToken<Tok>(resultsCache, a, t, p, d, s, l, tokenCallable);
 }
 
 "Shortcut function: Allows you to write `tokenizerTuple<Given>(\"given\")` instead of `[\"given\", tokenizerToken<Given>()]`.
@@ -213,7 +214,8 @@ shared abstract class BaseTokenizerToken<K>(shared actual Atom type, shared
         }
 
         if (eosAtom.subtypeOf(k), text.size <= position) {
-            results.add(TokenizerToken<EOS>(resultsCache, eosAtom, text, 0, 0, endPosition, 0, `EOS`));
+            results.add(TokenizerToken<EOS>(resultsCache, eosAtom, text, 0, 0, endPosition, 0,
+                (Integer a, Integer b, Integer c, Integer d) => nothing));
         }
 
         resultsCache.put(key, results);
@@ -225,18 +227,16 @@ shared abstract class BaseTokenizerToken<K>(shared actual Atom type, shared
 }
 
 class TokenizerToken<K>(shared actual MutableMap<[Atom,String,Integer], {Token<Object> *}> resultsCache,
-        Atom a, String t, Integer p, Integer d, [Integer,Integer] s, Integer l, Type<K> k)
+        Atom a, String t, Integer p, Integer d, [Integer,Integer] s, Integer l, <Callable<K, [Integer,Integer,Integer,Integer]>|Callable<K, [String,Integer,Integer,Integer,Integer]>> k)
         extends BaseTokenizerToken<K>(a, t, d, s, l)
         given K of CeylonToken|EOS satisfies Object {
     shared actual Integer position = p;
     shared actual default K node {
-        if (is Callable<K, [Integer,Integer,Integer,Integer]> t = k) {
-            return t(startPosition[0], startPosition[1],
+        if (is Callable<K, [Integer,Integer,Integer,Integer]> k) {
+            return k(startPosition[0], startPosition[1],
                     endPosition[0], endPosition[1]);
         } else {
-            assert(is Callable<K, [String,Integer,Integer,Integer,Integer]> t =
-                    k);
-            return t(text[(position - dataLength) : dataLength],
+            return k(text[(position - dataLength) : dataLength],
                     startPosition[0], startPosition[1],
                     endPosition[0], endPosition[1]);
         }
