@@ -111,7 +111,6 @@ shared abstract class Grammar() {
     "Populate rulesCache and return its new value"
     {Rule *} getRulesSlowpath(Atom a) {
         value staticRules = rules.select((x) => x.produces.subtypeOf(a));
-        {Rule *} ret;
 
         value t = a.type;
         if (is UnionType<> t) {

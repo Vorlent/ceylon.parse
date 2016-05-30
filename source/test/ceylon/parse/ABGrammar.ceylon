@@ -1,6 +1,5 @@
 import ceylon.parse { ... }
 import ceylon.collection { ArrayList }
-import ceylon.language.meta.model { Type }
 
 class S(Integer pos = 0, Sym* children) extends Sym(pos, *children) {}
 class A(Integer pos = 0, Sym* children) extends Sym(pos, *children) {}

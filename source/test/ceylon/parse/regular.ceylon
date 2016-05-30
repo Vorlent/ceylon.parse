@@ -1,5 +1,10 @@
-import ceylon.parse.regular { any, lit, not }
-import ceylon.test { test }
+import ceylon.parse.regular {
+	any,
+	lit
+}
+import ceylon.test {
+	test
+}
 
 test
 shared void backtrack() {

@@ -1,6 +1,5 @@
 import ceylon.parse {
     Grammar,
-    Token,
     rule,
     omniRule,
     genericRule,

@@ -1,6 +1,4 @@
 import ceylon.parse { ... }
-import ceylon.language.meta { type }
-import ceylon.language.meta.model { Type }
 import ceylon.collection { ArrayList }
 
 class Expr(Integer pos = 0, Sym* children) extends Sym(pos, *children) {}

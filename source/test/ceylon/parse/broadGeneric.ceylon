@@ -1,7 +1,6 @@
 import ceylon.parse { ... }
 import ceylon.test { test, assertEquals }
 import ceylon.collection { ArrayList }
-import ceylon.language.meta.model { Type }
 
 {Token<Object> *} tokenizeBroad(String s, Integer pos, Atom k) {
     value results = ArrayList<Token<Object>>();
