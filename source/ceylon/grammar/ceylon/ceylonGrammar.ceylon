@@ -13,7 +13,7 @@ import ceylon.collection { ArrayList }
 
 "AST Node key to attach individual tokens"
 shared Key<List<CeylonToken>> tokensKey = ScopedKey<List<CeylonToken>>(`package
-        ceylon.parse.ceylon`, "tokens");
+        ceylon.grammar.ceylon`, "tokens");
 
 "Meta token"
 TypeArg meta<TypeArg>(Callable<TypeArg, [CeylonToken+]> t,
@@ -46,7 +46,7 @@ NodeType astTextNode<NodeType>(Callable<NodeType, [String]> t,
 
 "Text from a stream of tokens"
 String tokenText(CeylonToken* token)
-        =>(token*.text).fold("")((x,y)=>x);
+	=> "".join(token*.text);
 
 "Extract all tokens from a series of arguments to a production"
 List<CeylonToken> tokenStream(CeylonToken|{CeylonToken|Node*}|Node?* args) {
@@ -367,17 +367,18 @@ shared object ceylonGrammar extends Grammar() {
     shared EntryType entryType(MainType key, Arrow a, MainType item)
             => astNode(EntryType, [key, item], key, a, item);
 
-    "Section 3.3.2 of the specification"
-    rule
-    shared ClassInstantiation classInstantiation([SuperTok, Dot]? sup,
-            TypeNameWithTypeArguments type, PositionalArguments args)
-            => astNode(ClassInstantiation, [type, args, if (exists sup) then
-            Super() else null], sup, type, args);
+   //TODO
+   // "Section 3.3.2 of the specification"
+   // rule
+   // shared ClassInstantiation classInstantiation([SuperTok, Dot]? sup,
+   //         TypeNameWithTypeArguments type, PositionalArguments args)
+   //         => astNode(ClassInstantiation, [type, args, if (exists sup) then
+   //         Super() else null], sup, type, args);
 
-    "Section 3.3.2 of the specification"
-    rule
-    shared ExtendedType extendedType(Extends e, ClassInstantiation inst)
-            => astNode(ExtendedType, [inst], e, inst);
+   // "Section 3.3.2 of the specification"
+   // rule
+   // shared ExtendedType extendedType(Extends e, ClassInstantiation inst)
+   //         => astNode(ExtendedType, [inst], e, inst);
 
     "Section 3.3.3 of the specification"
     rule
@@ -649,10 +650,11 @@ shared object ceylonGrammar extends Grammar() {
             MemberName n, ExtendedType? e, SatisfiedTypes? s, ClassBody b)
             => astNode(ObjectDefinition, [n, b, e, s, a], a, i, n, e, s, b);
 
-    "Section 4.5.9 of the specification"
-    rule
-    shared ClassSpecifier classSpecifier(DArrow d, ClassInstantiation t)
-            => astNode(ClassSpecifier, [t], d, t);
+    //TODO
+    //"Section 4.5.9 of the specification"
+    //rule
+    //shared ClassSpecifier classSpecifier(DArrow d, ClassInstantiation t)
+    //        => astNode(ClassSpecifier, [t], d, t);
 
     "Section 4.6 of the specification"
     rule
@@ -719,9 +721,9 @@ shared object ceylonGrammar extends Grammar() {
 
     "Section 4.9 of the specification"
     rule
-    shared ConstructorDefinition constructorDefinition(Annotations a,
-            New nk, TypeName? n, Parameters p, ExtendedType e, Block b)
-            => astNode(ConstructorDefinition, [n, p, b, e, a],
+    shared CallableConstructorDefinition constructorDefinition(Annotations a,
+            New nk, LIdentifier? n, Parameters p, ExtendedType e, Block b)
+            => astNode(CallableConstructorDefinition, [n, p, b, e, a],
                     a, nk, n, p, e, b);
 
     "Section 5.2.1 of the specification"
@@ -913,13 +915,8 @@ shared object ceylonGrammar extends Grammar() {
 
     "Section 5.5.2 of the specification"
     rule
-    shared SwitchCases switchCases([CaseClause +] c, ElseCaseClause? e)
+    shared SwitchCases switchCases([CaseClause +] c, ElseClause? e)
             => astNode(SwitchCases, [c, e], c, e);
-
-    "Section 5.5.2 of the specification"
-    rule
-    shared ElseCaseClause elseCaseClause(ElseTok i, Block b)
-            => astNode(ElseCaseClause, [b], i, b);
 
     "Section 5.5.2 of the specification"
     rule
@@ -1608,7 +1605,7 @@ shared object ceylonGrammar extends Grammar() {
     "Section 6.10 of the specification"
     rule
     shared ConstructorDec constructorDec(Tick o, New t, DecQualifier q,
-            UIdentifier n, Tick c)
+            LIdentifier n, Tick c)
             => astNode(ConstructorDec, [n, q], o, t, q, n, c);
 
     "Section 6.10 of the specification"
