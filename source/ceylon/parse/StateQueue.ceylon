@@ -12,6 +12,7 @@ class StateQueue<Root>(Grammar g, SOSToken start)
 
     value sets = ArrayList<EPState>{*g.startRules<Root>().collect(
                 (x) => EPState(x, start))};
+    value setsunique = HashSet{*sets};
     value incomming = PriorityQueue<EPState>((x,y) => x.pos <=> y.pos);
     value localComplete = ArrayList<EPState>();
     value streamToSetPos = HashMap<Integer,Integer>{0->0};
@@ -49,7 +50,10 @@ class StateQueue<Root>(Grammar g, SOSToken start)
                exists next = incomming.accept()) {
             completeFromLocal(next);
             complete(next);
-            sets.add(next);
+            if(!setsunique.contains(next)) {
+            	sets.add(next);
+            	setsunique.add(next);
+            }
         }
     }
 
@@ -88,9 +92,11 @@ class StateQueue<Root>(Grammar g, SOSToken start)
             for (next in e.predicts(currentPrediction)) {
                 completeFromLocal(next);
                 complete(next);
-                sets.add(next);
+                if(!setsunique.contains(next)) {
+                    sets.add(next);
+                    setsunique.add(next);
+                }
             }
-
             predictStart++;
         }
     }
@@ -103,7 +109,6 @@ class StateQueue<Root>(Grammar g, SOSToken start)
                     incomming.offer(s);
                 }
             }
-
             scanStart++;
         }
     }
